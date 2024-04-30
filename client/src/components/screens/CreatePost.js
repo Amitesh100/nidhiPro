@@ -94,12 +94,12 @@ const CretePost = ()=>{
                 Submit post
             </button>
 {/* My code  */}
-            {url && (
+            {
                 <div>
                     <p>Uploaded Image:</p>
                     <img src={url} alt="Uploaded" style={{ maxWidth: "100%" }} />
                 </div>
-            )}
+            }
        </div>
    )
 }
