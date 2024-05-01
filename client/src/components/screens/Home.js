@@ -138,17 +138,19 @@ const Home  = ()=>{
                             onClick={()=>{likePost(item._id)}}
                             >thumb_up</i>
                             }
-                            
-                           
+                                                       
                                 <h6>{item.likes.length} likes</h6>
                                 <h6>{item.title}</h6>
                                 <p>{item.body}</p>
+                                <p style={{ fontWeight: 'semi-bold' }}>@Tagged People:</p>
+
                                 {
                                     item.comments.map(record=>{
                                         return(
                                         <h6 key={record._id}><span style={{fontWeight:"500"}}>{record.postedBy.name}</span> {record.text}</h6>
                                         )
                                     })
+
                                 }
                                 <form onSubmit={(e)=>{
                                     e.preventDefault()

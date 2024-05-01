@@ -35,6 +35,37 @@ const CretePost = ()=>{
     //     })
     // }
     // },[url])
+
+    const submit = () => {
+        if (url) {
+            fetch("/createpost", {
+                method: "post",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + localStorage.getItem("jwt")
+                },
+                body: JSON.stringify({
+                    title,
+                    body,
+                    pic: url
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    M.toast({ html: data.error, classes: "#c62828 red darken-3" });
+                } else {
+                    M.toast({ html: "Created post Successfully", classes: "#43a047 green darken-1" });
+                    history.push('/');
+                }
+            })
+            .catch(err => {
+                console.log(err);
+            });
+        }
+    };
+
+
   
    const postDetails = ()=>{
        const data = new FormData()
@@ -82,8 +113,8 @@ const handleOptionChange = (e) => {
     setSelectedOptions(selectedValues);
 };
 
-const options = ["Option 1", "Option 2", "Option 3"]; // Add your options here
-    // const [selectedOptions, setSelectedOptions] = useState([]);
+// Add your options here
+const options = ["Option 1", "Option 2", "Option 3"]; 
 
     const toggleOption = (option) => {
         if (selectedOptions.includes(option)) {
@@ -102,7 +133,7 @@ const options = ["Option 1", "Option 2", "Option 3"]; // Add your options here
     };
   
     const checkboxOptions = options.map((option, index) => (
-        <label key={index} style={{ display: 'block', marginBottom: '5px', color: 'green' }}>
+        <label key={index} style={{flex: '1', marginRight: '10px' , color: 'green' }}>
             <input
                 type="checkbox"
                 value={option}
@@ -179,7 +210,7 @@ const options = ["Option 1", "Option 2", "Option 3"]; // Add your options here
            <br></br>
 
             <button className="btn waves-effect waves-light #64b5f6 blue darken-1"
-            onClick={()=>postDetails()}
+            onClick={()=>submit()}
             
             >
                 Submit post
