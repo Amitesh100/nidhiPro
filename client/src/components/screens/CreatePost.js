@@ -39,6 +39,25 @@ const CretePost = ()=>{
     // }
     // },[url])
 
+    //    const postDetails = ()=>{
+//        const data = new FormData()
+//        data.append("file",image)
+//        data.append("upload_preset","insta-clone-test")
+//        data.append("cloud_name","namecloud")
+//        fetch("https://api.cloudinary.com/v1_1/namecloud/image/upload",{
+//            method:"post",
+//            body:data
+//        })
+//        .then(res=>res.json())
+//        .then(data=>{
+//           setUrl(data.url)
+//        })
+//        .catch(err=>{
+//            console.log(err)
+//        })    
+//    }
+
+
     const submit = () => {
         console.log("hjdhjfhjjh")
         if (url || isBase64(url)) {
@@ -70,52 +89,34 @@ const CretePost = ()=>{
         }
     };
   
-//    const postDetails = ()=>{
-//        const data = new FormData()
-//        data.append("file",image)
-//        data.append("upload_preset","insta-clone-test")
-//        data.append("cloud_name","namecloud")
-//        fetch("https://api.cloudinary.com/v1_1/namecloud/image/upload",{
-//            method:"post",
-//            body:data
-//        })
-//        .then(res=>res.json())
-//        .then(data=>{
-//           setUrl(data.url)
-//        })
-//        .catch(err=>{
-//            console.log(err)
-//        })    
-//    }
 
     const isBase64 = (str) => {
         return /^data:image\/[a-z]+;base64,/.test(str);
     };
 
-   const postDetails = ()=>{
-    const data = new FormData()
-    // data.append("file",image)
-    // data.append("upload_preset","insta-clone-test")
-    // data.append("cloud_name","namecloud")
-    fetch("http://10.11.12.133:4488/get-suggestions",{
-        method:"post",
-        body:data
-    })
-    .then(res=>res.json())
-    .then(data=>{
-        setBase64Image(data.url)
-    })
-    .catch(err=>{
-        console.log(err)
-    }) 
-}
-
-   useEffect(() => {
-    if (image) {
-        console.log("Image is set")
-        postDetails();
-    }
-    }, [image]);
+    const postDetails = () => {
+        const data = new FormData();
+        data.append("image", base64Image); // Append base64Image to FormData
+    
+        fetch("http://10.11.12.133:4488/get-suggestions", {
+            method: "post",
+            body: data
+        })
+        .then(res => res.json())
+        .then(data => {
+            setUrl(data.url);
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    };
+    
+    useEffect(() => {
+        if (base64Image) {
+            console.log("Image is set");
+            postDetails();
+        }
+    }, [base64Image]);
     
     // const handleImageChange = async (e) => {
     //     setImage(e.target.files[0]);
@@ -131,8 +132,7 @@ const CretePost = ()=>{
             console.log(reader.result); 
             //  Base64 data
             setBase64Image(reader.result);
-        };
-    
+        };   
         reader.readAsDataURL(file);
     };
     
