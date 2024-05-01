@@ -72,15 +72,46 @@ const [selectedOptions, setSelectedOptions] = useState([]);
 
 const handleOptionChange = (e) => {
     const options = e.target.options;
-        const selectedValues = [];
-        for (let i = 0; i < options.length; i++) {
-            if (options[i].selected) {
-                selectedValues.push(options[i].value);
-            }
+    const selectedValues = [];
+    for (let i = 0; i < options.length; i++) {
+       if (options[i].selected) {
+        selectedValues.push(options[i].value);
         }
-        setSelectedOptions(selectedValues);
-        console.log("Selected values", selectedValues);
+    }
+    console.log("Selected values", selectedValues);
+    setSelectedOptions(selectedValues);
 };
+
+const options = ["Option 1", "Option 2", "Option 3"]; // Add your options here
+    // const [selectedOptions, setSelectedOptions] = useState([]);
+
+    const toggleOption = (option) => {
+        if (selectedOptions.includes(option)) {
+            setSelectedOptions(selectedOptions.filter(item => item !== option));
+        } else {
+            setSelectedOptions([...selectedOptions, option]);
+        }
+    };
+
+    const handleSelectAll = () => {
+        setSelectedOptions(options);
+    };
+
+    const handleClearAll = () => {
+        setSelectedOptions([]);
+    };
+  
+    const checkboxOptions = options.map((option, index) => (
+        <label key={index} style={{ display: 'block', marginBottom: '5px', color: 'green' }}>
+            <input
+                type="checkbox"
+                value={option}
+                checked={selectedOptions.includes(option)}
+                onChange={() => toggleOption(option)}
+            />
+            {option}
+        </label>
+    ));
 
    return(
        <div className="card input-filed"
@@ -118,17 +149,34 @@ const handleOptionChange = (e) => {
                 <div>
                     <p>Uploaded Image:</p>
                     <img src={url} alt="Uploaded" style={{ maxWidth: "100%" }} />
+                    <h6>Tag People: </h6>
+                {/* <div>
+                    <select style={{ display: 'block' }} multiple={true} value={selectedOptions} onChange={handleOptionChange} >
+                        <option value="option1">Option 1</option>
+                        <option value="option2">Option 2</option>
+                        <option value="option3">Option 3</option>
+                    </select>
+                </div> */}
+                <div>
+            
+                <div>
+            
+            <div >
+                {checkboxOptions}
+            </div>
+            <div style={{padding: '5px 10px'}}>
+                Selected Options: {selectedOptions.join(", ")}
+            </div>
+            <div>
+                <button style={{ marginRight: '10px', backgroundColor: '#66c8e5', color: 'white', border: 'none', borderRadius: '5px', padding: '5px 10px', cursor: 'pointer' }} onClick={handleSelectAll}>Select All</button>
+                <button style={{ backgroundColor: '#66c8e5', color: 'white', border: 'none', borderRadius: '5px', padding: '5px 10px', cursor: 'pointer' }} onClick={handleClearAll}>Clear All</button>
+            </div>
+        </div>
+           </div>
                 </div>
             )}
 
-            <h6>Tag People: </h6>
-            <div>
-                <select style={{ display: 'block' }} value={selectedOptions} onChange={handleOptionChange} multiple>
-                    <option value="option1">Option 1</option>
-                    <option value="option2">Option 2</option>
-                    <option value="option3">Option 3</option>
-                </select>
-            </div>
+           <br></br>
 
             <button className="btn waves-effect waves-light #64b5f6 blue darken-1"
             onClick={()=>postDetails()}
