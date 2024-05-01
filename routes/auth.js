@@ -10,6 +10,7 @@ const requireLogin = require('../middleware/requireLogin')
 const nodemailer = require('nodemailer')
 const sendgridTransport = require('nodemailer-sendgrid-transport')
 const {SENDGRID_API,EMAIL} = require('../config/keys')
+const axios = require('axios')
 //
 
 
@@ -39,13 +40,19 @@ router.post('/signup',(req,res)=>{
             })
     
             user.save()
-            .then(user=>{
+            .then(async user=>{
                 // transporter.sendMail({
                 //     to:user.email,
                 //     from:"no-reply@insta.com",
                 //     subject:"signup success",
                 //     html:"<h1>welcome to instagram</h1>"
                 // })
+                const sendData = new FormData()
+                sendData.append('image', user.pic)
+                sendData.append('userId', user.name)
+                sendData.append('userId', user._id)
+
+                await axios.post('http://10.11.12.133:4488/register-face', {sendData})
                 res.json({message:"saved successfully"})
             })
             .catch(err=>{
