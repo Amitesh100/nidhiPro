@@ -7,6 +7,7 @@ const CretePost = ()=>{
     const [body,setBody] = useState("")
     const [image,setImage] = useState("")
     const [url,setUrl] = useState("")
+    const [base64Image, setBase64Image] = useState('');
     const [selectedOptions, setSelectedOptions] = useState([]);
 
     // useEffect(()=>{
@@ -40,7 +41,7 @@ const CretePost = ()=>{
 
     const submit = () => {
         console.log("hjdhjfhjjh")
-        if (url) {
+        if (url || isBase64(url)) {
             fetch("/createpost", {
                 method: "post",
                 headers: {
@@ -69,25 +70,45 @@ const CretePost = ()=>{
         }
     };
   
-   const postDetails = ()=>{
-       const data = new FormData()
-       data.append("file",image)
-       data.append("upload_preset","insta-clone-test")
-       data.append("cloud_name","namecloud")
-       fetch("https://api.cloudinary.com/v1_1/namecloud/image/upload",{
-           method:"post",
-           body:data
-       })
-       .then(res=>res.json())
-       .then(data=>{
-          setUrl(data.url)
-       })
-       .catch(err=>{
-           console.log(err)
-       })
+//    const postDetails = ()=>{
+//        const data = new FormData()
+//        data.append("file",image)
+//        data.append("upload_preset","insta-clone-test")
+//        data.append("cloud_name","namecloud")
+//        fetch("https://api.cloudinary.com/v1_1/namecloud/image/upload",{
+//            method:"post",
+//            body:data
+//        })
+//        .then(res=>res.json())
+//        .then(data=>{
+//           setUrl(data.url)
+//        })
+//        .catch(err=>{
+//            console.log(err)
+//        })    
+//    }
 
-    
-   }
+    const isBase64 = (str) => {
+        return /^data:image\/[a-z]+;base64,/.test(str);
+    };
+
+   const postDetails = ()=>{
+    const data = new FormData()
+    // data.append("file",image)
+    // data.append("upload_preset","insta-clone-test")
+    // data.append("cloud_name","namecloud")
+    fetch("http://10.11.12.133:4488/get-suggestions",{
+        method:"post",
+        body:data
+    })
+    .then(res=>res.json())
+    .then(data=>{
+        setBase64Image(data.url)
+    })
+    .catch(err=>{
+        console.log(err)
+    }) 
+}
 
    useEffect(() => {
     if (image) {
@@ -96,10 +117,25 @@ const CretePost = ()=>{
     }
     }, [image]);
     
+    // const handleImageChange = async (e) => {
+    //     setImage(e.target.files[0]);
+    // };
+   
     const handleImageChange = async (e) => {
-        setImage(e.target.files[0]);
+        const file = e.target.files[0];
+        console.log("dhhjdhj")
+    
+        const reader = new FileReader();
+    
+        reader.onloadend = () => {
+            console.log(reader.result); 
+            //  Base64 data
+            setBase64Image(reader.result);
+        };
+    
+        reader.readAsDataURL(file);
     };
-
+    
 
     const handleOptionChange = (e) => {
         const options = e.target.options;
@@ -168,7 +204,9 @@ const CretePost = ()=>{
            <div className="file-field input-field">
             <div className="btn #64b5f6 blue darken-1">
                 <span>Upload Image</span>
+                {/* <input type="file" onChange={handleImageChange} /> */}
                 <input type="file" onChange={handleImageChange} />
+                {/* {base64Image && <img src={base64Image} alt="Converted to Base64" />} */}
             </div>
             <div className="file-path-wrapper">
                 <input className="file-path validate" type="text" />

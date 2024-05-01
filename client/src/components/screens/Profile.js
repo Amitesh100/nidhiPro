@@ -92,7 +92,7 @@ const Profile  = ()=>{
                 <span>Update pic</span>
                 <input type="file" onChange={(e)=>updatePhoto(e.target.files[0])} />
             </div>
-            <div className="file-path-wrapper">
+            <div className="file-path-wrapper" style ={{paddingRight: "50px"}}>
                 <input className="file-path validate" type="text" />
             <h5 style={{color: "green"}}>My Posts</h5>    
             </div>
