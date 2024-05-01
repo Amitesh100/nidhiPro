@@ -34,7 +34,13 @@ router.get('/getsubpost',requireLogin,(req,res)=>{
 })
 
 router.post('/createpost',requireLogin,(req,res)=>{
-    const {title,body,pic} = req.body 
+    console.log("Create post called")
+    const {title,body,pic, tagged} = req.body
+    console.log("before if tagged", req.body)
+    if (tagged == null || tagged == undefined) {
+        tagged = "none"
+    }
+    console.log("Tagged is ", tagged)
     if(!title || !body || !pic){
       return  res.status(422).json({error:"Plase add all the fields"})
     }
@@ -43,6 +49,7 @@ router.post('/createpost',requireLogin,(req,res)=>{
         title,
         body,
         photo:pic,
+        tagged,
         postedBy:req.user
     })
     post.save().then(result=>{

@@ -7,6 +7,9 @@ const CretePost = ()=>{
     const [body,setBody] = useState("")
     const [image,setImage] = useState("")
     const [url,setUrl] = useState("")
+    const [base64Image, setBase64Image] = useState('');
+    const [selectedOptions, setSelectedOptions] = useState([]);
+
     // useEffect(()=>{
     //    if(url){
     //     fetch("/createpost",{
@@ -35,55 +38,118 @@ const CretePost = ()=>{
     //     })
     // }
     // },[url])
-  
-   const postDetails = ()=>{
-       const data = new FormData()
-       data.append("file",image)
-       data.append("upload_preset","insta-clone-test")
-       data.append("cloud_name","namecloud")
-       fetch("https://api.cloudinary.com/v1_1/namecloud/image/upload",{
-           method:"post",
-           body:data
-       })
-       .then(res=>res.json())
-       .then(data=>{
-          setUrl(data.url)
-       })
-       .catch(err=>{
-           console.log(err)
-       })
 
-    
-   }
+    const submit = () => {
+        console.log("hjdhjfhjjh")
+        if (url || isBase64(url)) {
+            fetch("/createpost", {
+                method: "post",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + localStorage.getItem("jwt")
+                },
+                body: JSON.stringify({
+                    title,
+                    body,
+                    pic: url,
+                    tagged: selectedOptions
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    M.toast({ html: data.error, classes: "#c62828 red darken-3" });
+                } else {
+                    M.toast({ html: "Created post Successfully", classes: "#43a047 green darken-1" });
+                    history.push('/');
+                }
+            })
+            .catch(err => {
+                console.log(err);
+            });
+        }
+    };
+  
+//    const postDetails = ()=>{
+//        const data = new FormData()
+//        data.append("file",image)
+//        data.append("upload_preset","insta-clone-test")
+//        data.append("cloud_name","namecloud")
+//        fetch("https://api.cloudinary.com/v1_1/namecloud/image/upload",{
+//            method:"post",
+//            body:data
+//        })
+//        .then(res=>res.json())
+//        .then(data=>{
+//           setUrl(data.url)
+//        })
+//        .catch(err=>{
+//            console.log(err)
+//        })    
+//    }
+
+    const isBase64 = (str) => {
+        return /^data:image\/[a-z]+;base64,/.test(str);
+    };
+
+   const postDetails = ()=>{
+    const data = new FormData()
+    // data.append("file",image)
+    // data.append("upload_preset","insta-clone-test")
+    // data.append("cloud_name","namecloud")
+    fetch("http://10.11.12.133:4488/get-suggestions",{
+        method:"post",
+        body:data
+    })
+    .then(res=>res.json())
+    .then(data=>{
+        setBase64Image(data.url)
+    })
+    .catch(err=>{
+        console.log(err)
+    }) 
+}
 
    useEffect(() => {
     if (image) {
         console.log("Image is set")
         postDetails();
     }
-}, [image]);
- 
-   const handleImageChange = async (e) => {
-    setImage(e.target.files[0]);
-};
+    }, [image]);
+    
+    // const handleImageChange = async (e) => {
+    //     setImage(e.target.files[0]);
+    // };
+   
+    const handleImageChange = async (e) => {
+        const file = e.target.files[0];
+        console.log("dhhjdhj")
+    
+        const reader = new FileReader();
+    
+        reader.onloadend = () => {
+            console.log(reader.result); 
+            //  Base64 data
+            setBase64Image(reader.result);
+        };
+    
+        reader.readAsDataURL(file);
+    };
+    
 
-
-const [selectedOptions, setSelectedOptions] = useState([]);
-
-const handleOptionChange = (e) => {
-    const options = e.target.options;
-    const selectedValues = [];
-    for (let i = 0; i < options.length; i++) {
-       if (options[i].selected) {
-        selectedValues.push(options[i].value);
+    const handleOptionChange = (e) => {
+        const options = e.target.options;
+        const selectedValues = [];
+        for (let i = 0; i < options.length; i++) {
+        if (options[i].selected) {
+            selectedValues.push(options[i].value);
+            }
         }
-    }
-    console.log("Selected values", selectedValues);
-    setSelectedOptions(selectedValues);
-};
+        console.log("Selected values", selectedValues);
+        setSelectedOptions(selectedValues);
+    };
 
-const options = ["Option 1", "Option 2", "Option 3"]; // Add your options here
-    // const [selectedOptions, setSelectedOptions] = useState([]);
+    const options = ["Option 1", "Option 2", "Option 3"]; 
 
     const toggleOption = (option) => {
         if (selectedOptions.includes(option)) {
@@ -102,7 +168,7 @@ const options = ["Option 1", "Option 2", "Option 3"]; // Add your options here
     };
   
     const checkboxOptions = options.map((option, index) => (
-        <label key={index} style={{ display: 'block', marginBottom: '5px', color: 'green' }}>
+        <label key={index} style={{flex: '1', marginRight: '10px' , color: 'green' }}>
             <input
                 type="checkbox"
                 value={option}
@@ -138,7 +204,9 @@ const options = ["Option 1", "Option 2", "Option 3"]; // Add your options here
            <div className="file-field input-field">
             <div className="btn #64b5f6 blue darken-1">
                 <span>Upload Image</span>
+                {/* <input type="file" onChange={handleImageChange} /> */}
                 <input type="file" onChange={handleImageChange} />
+                {/* {base64Image && <img src={base64Image} alt="Converted to Base64" />} */}
             </div>
             <div className="file-path-wrapper">
                 <input className="file-path validate" type="text" />
@@ -178,11 +246,9 @@ const options = ["Option 1", "Option 2", "Option 3"]; // Add your options here
 
            <br></br>
 
-            <button className="btn waves-effect waves-light #64b5f6 blue darken-1"
-            onClick={()=>postDetails()}
-            
-            >
-                Submit post
+           <button className="btn waves-effect waves-light #64b5f6 blue darken-1"
+                onClick={submit}>
+                Submit Post
             </button>
        </div>
    )
