@@ -7,34 +7,34 @@ const CretePost = ()=>{
     const [body,setBody] = useState("")
     const [image,setImage] = useState("")
     const [url,setUrl] = useState("")
-    useEffect(()=>{
-       if(url){
-        fetch("/createpost",{
-            method:"post",
-            headers:{
-                "Content-Type":"application/json",
-                "Authorization":"Bearer "+localStorage.getItem("jwt")
-            },
-            body:JSON.stringify({
-                title,
-                body,
-                pic:url
-            })
-        }).then(res=>res.json())
-        .then(data=>{
+    // useEffect(()=>{
+    //    if(url){
+    //     fetch("/createpost",{
+    //         method:"post",
+    //         headers:{
+    //             "Content-Type":"application/json",
+    //             "Authorization":"Bearer "+localStorage.getItem("jwt")
+    //         },
+    //         body:JSON.stringify({
+    //             title,
+    //             body,
+    //             pic:url
+    //         })
+    //     }).then(res=>res.json())
+    //     .then(data=>{
     
-           if(data.error){
-              M.toast({html: data.error,classes:"#c62828 red darken-3"})
-           }
-           else{
-               M.toast({html:"Created post Successfully",classes:"#43a047 green darken-1"})
-               history.push('/')
-           }
-        }).catch(err=>{
-            console.log(err)
-        })
-    }
-    },[url])
+    //        if(data.error){
+    //           M.toast({html: data.error,classes:"#c62828 red darken-3"})
+    //        }
+    //        else{
+    //            M.toast({html:"Created post Successfully",classes:"#43a047 green darken-1"})
+    //            history.push('/')
+    //        }
+    //     }).catch(err=>{
+    //         console.log(err)
+    //     })
+    // }
+    // },[url])
   
    const postDetails = ()=>{
        const data = new FormData()
@@ -55,7 +55,32 @@ const CretePost = ()=>{
 
     
    }
+
+   useEffect(() => {
+    if (image) {
+        console.log("Image is set")
+        postDetails();
+    }
+}, [image]);
  
+   const handleImageChange = async (e) => {
+    setImage(e.target.files[0]);
+};
+
+
+const [selectedOptions, setSelectedOptions] = useState([]);
+
+const handleOptionChange = (e) => {
+    const options = e.target.options;
+        const selectedValues = [];
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].selected) {
+                selectedValues.push(options[i].value);
+            }
+        }
+        setSelectedOptions(selectedValues);
+        console.log("Selected values", selectedValues);
+};
 
    return(
        <div className="card input-filed"
@@ -66,6 +91,7 @@ const CretePost = ()=>{
            textAlign:"center"
        }}
        >
+
            <input 
            type="text"
             placeholder="title"
@@ -81,25 +107,35 @@ const CretePost = ()=>{
            <div className="file-field input-field">
             <div className="btn #64b5f6 blue darken-1">
                 <span>Upload Image</span>
-                <input type="file" onChange={(e)=>setImage(e.target.files[0])} />
+                <input type="file" onChange={handleImageChange} />
             </div>
             <div className="file-path-wrapper">
                 <input className="file-path validate" type="text" />
             </div>
             </div>
-            <button className="btn waves-effect waves-light #64b5f6 blue darken-1"
-            onClick={()=>postDetails()}
-            
-            >
-                Submit post
-            </button>
-{/* My code  */}
+
             {url && (
                 <div>
                     <p>Uploaded Image:</p>
                     <img src={url} alt="Uploaded" style={{ maxWidth: "100%" }} />
                 </div>
             )}
+
+            <h6>Tag People: </h6>
+            <div>
+                <select style={{ display: 'block' }} value={selectedOptions} onChange={handleOptionChange} multiple>
+                    <option value="option1">Option 1</option>
+                    <option value="option2">Option 2</option>
+                    <option value="option3">Option 3</option>
+                </select>
+            </div>
+
+            <button className="btn waves-effect waves-light #64b5f6 blue darken-1"
+            onClick={()=>postDetails()}
+            
+            >
+                Submit post
+            </button>
        </div>
    )
 }
