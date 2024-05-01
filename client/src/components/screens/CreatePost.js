@@ -7,6 +7,8 @@ const CretePost = ()=>{
     const [body,setBody] = useState("")
     const [image,setImage] = useState("")
     const [url,setUrl] = useState("")
+    const [selectedOptions, setSelectedOptions] = useState([]);
+
     // useEffect(()=>{
     //    if(url){
     //     fetch("/createpost",{
@@ -37,6 +39,7 @@ const CretePost = ()=>{
     // },[url])
 
     const submit = () => {
+        console.log("hjdhjfhjjh")
         if (url) {
             fetch("/createpost", {
                 method: "post",
@@ -47,7 +50,8 @@ const CretePost = ()=>{
                 body: JSON.stringify({
                     title,
                     body,
-                    pic: url
+                    pic: url,
+                    tagged: selectedOptions
                 })
             })
             .then(res => res.json())
@@ -64,8 +68,6 @@ const CretePost = ()=>{
             });
         }
     };
-
-
   
    const postDetails = ()=>{
        const data = new FormData()
@@ -92,29 +94,26 @@ const CretePost = ()=>{
         console.log("Image is set")
         postDetails();
     }
-}, [image]);
- 
-   const handleImageChange = async (e) => {
-    setImage(e.target.files[0]);
-};
+    }, [image]);
+    
+    const handleImageChange = async (e) => {
+        setImage(e.target.files[0]);
+    };
 
 
-const [selectedOptions, setSelectedOptions] = useState([]);
-
-const handleOptionChange = (e) => {
-    const options = e.target.options;
-    const selectedValues = [];
-    for (let i = 0; i < options.length; i++) {
-       if (options[i].selected) {
-        selectedValues.push(options[i].value);
+    const handleOptionChange = (e) => {
+        const options = e.target.options;
+        const selectedValues = [];
+        for (let i = 0; i < options.length; i++) {
+        if (options[i].selected) {
+            selectedValues.push(options[i].value);
+            }
         }
-    }
-    console.log("Selected values", selectedValues);
-    setSelectedOptions(selectedValues);
-};
+        console.log("Selected values", selectedValues);
+        setSelectedOptions(selectedValues);
+    };
 
-// Add your options here
-const options = ["Option 1", "Option 2", "Option 3"]; 
+    const options = ["Option 1", "Option 2", "Option 3"]; 
 
     const toggleOption = (option) => {
         if (selectedOptions.includes(option)) {
@@ -209,11 +208,9 @@ const options = ["Option 1", "Option 2", "Option 3"];
 
            <br></br>
 
-            <button className="btn waves-effect waves-light #64b5f6 blue darken-1"
-            onClick={()=>submit()}
-            
-            >
-                Submit post
+           <button className="btn waves-effect waves-light #64b5f6 blue darken-1"
+                onClick={submit}>
+                Submit Post
             </button>
        </div>
    )

@@ -94,9 +94,10 @@ const Profile  = ()=>{
             </div>
             <div className="file-path-wrapper">
                 <input className="file-path validate" type="text" />
+            <h5 style={{color: "green"}}>My Posts</h5>    
             </div>
             </div>
-            </div>      
+            </div>  
            <div className="gallery">
                {
                    mypics.map(item=>{

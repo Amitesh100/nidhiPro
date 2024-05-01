@@ -127,22 +127,24 @@ const Home  = ()=>{
                                 <img src={item.photo}/>
                             </div>
                             <div className="card-content">
-                            <i className="material-icons" style={{color:"red"}}>favorite</i>
+                            {/* <i className="material-icons" style={{color:"red"}}>favorite</i> */}
                             {item.likes.includes(state._id)
                             ? 
-                             <i className="material-icons"
+                             <i className="material-icons" style={{color:"red"}}
                                     onClick={()=>{unlikePost(item._id)}}
-                              >thumb_down</i>
+                              >favorite</i>
                             : 
-                            <i className="material-icons"
+                            <i className="material-icons" style={{color:"black"}}
                             onClick={()=>{likePost(item._id)}}
-                            >thumb_up</i>
+                            >favorite</i>
                             }
                                                        
                                 <h6>{item.likes.length} likes</h6>
                                 <h6>{item.title}</h6>
                                 <p>{item.body}</p>
-                                <p style={{ fontWeight: 'semi-bold' }}>@Tagged People:</p>
+                                <p style={{ fontWeight: 'semi-bold' }}>@Tagged People:
+                                <span style={{color: "blue"}}> { item.tagged.join(", ") }</span>
+                                </p>
 
                                 {
                                     item.comments.map(record=>{

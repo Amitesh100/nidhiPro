@@ -13,6 +13,9 @@ const postSchema = new mongoose.Schema({
         type:String,
         required:true
     },
+    tagged: {
+        type: Array
+    },
     likes:[{type:ObjectId,ref:"User"}],
     comments:[{
         text:String,
