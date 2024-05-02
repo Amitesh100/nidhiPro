@@ -9,7 +9,7 @@ const CretePost = ()=>{
     const [url,setUrl] = useState("")
     const [base64Image, setBase64Image] = useState('');
     const [selectedOptions, setSelectedOptions] = useState([]);
-    const [userProfile,setProfile] = useState("")
+    const [userDetails,setUserDetails] = useState([])
     const [search,setSearch] = useState('')
     // useEffect(()=>{
     //    if(url){
@@ -281,7 +281,7 @@ const CretePost = ()=>{
                 <button style={{ marginRight: '10px', backgroundColor: '#66c8e5', color: 'white', border: 'none', borderRadius: '5px', padding: '5px 10px', cursor: 'pointer' }} onClick={handleSelectAll}>Select All</button>
                 <button style={{ backgroundColor: '#66c8e5', color: 'white', border: 'none', borderRadius: '5px', padding: '5px 10px', cursor: 'pointer' }} onClick={handleClearAll}>Clear All</button>
             </div>
-            <div className="modal-footer">
+            {/* <div className="modal-footer">
             <button className="modal-close waves-effect waves-green btn-flat" onClick={()=>setSearch('')}>close</button>
             <input
             type="text"
@@ -289,7 +289,29 @@ const CretePost = ()=>{
             value={search}
             onChange={(e)=>fetchUsers(e.target.value)}
             />
+          </div> */}
+          <div id="modal1" className="modal" ref={searchModal} style={{color:"black"}}>
+          <div className="modal-content">
+          <input
+            type="text"
+            placeholder="search users"
+            value={search}
+            onChange={(e)=>fetchUsers(e.target.value)}
+            />
+             <ul className="collection">
+               {userDetails.map(item=>{
+                 return <Link to={item._id !== state._id ? "/profile/"+item._id:'/profile'} onClick={()=>{
+                   M.Modal.getInstance(searchModal.current).close()
+                   setSearch('')
+                 }}><li className="collection-item">{item.email}</li></Link> 
+               })}
+               
+              </ul>
           </div>
+          <div className="modal-footer">
+            <button className="modal-close waves-effect waves-green btn-flat" onClick={()=>setSearch('')}>close</button>
+          </div>
+        </div>
         </div>
            </div>
                 </div>
