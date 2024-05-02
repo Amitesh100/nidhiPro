@@ -64,7 +64,7 @@ const CretePost = ()=>{
                 body: JSON.stringify({
                     title,
                     body,
-                    pic: url,
+                    pic: base64Image,
                     tagged: selectedOptions
                 })
             })
@@ -90,7 +90,7 @@ const CretePost = ()=>{
 
     const postDetails = () => {
         const user = JSON.parse(localStorage.getItem("user"));
-        console.log("name:", user.name);
+        // console.log("name:", user.name);
         
         const data = new FormData();
         data.append("user_id", user.name); // Append user's name to FormData
@@ -102,8 +102,26 @@ const CretePost = ()=>{
         })
         .then(res => res.json())
         .then(data => {
-            // setUrl(data.url);
-            setSelectedOptions(data.selectedOptions);
+            console.log("data",typeof data.result, data.result)
+            // console.log("new Datdzxza", JSON.parse(JSON.stringify(data.result.name)));
+            let newData = JSON.parse(JSON.stringify(data.result));
+            console.log("new Data", typeof newData, newData);
+            console.log("new Dataget", newData[2]);
+            
+            // Try parsing newData directly
+            try {
+                let newDatasanitize = JSON.stringify(newData);
+                console.log("newdatasanitize", newDatasanitize);
+            } catch (error) {
+                console.error("Error while parsing newData:", error);
+            }
+            // let arr = []
+            // newData.map(item => {
+            //     arr.push(item.name)
+            // })
+
+            // console.log('array got is', arr)
+            // setSelectedOptions(data.selectedOptions);
         })
         .catch(err => {
             console.log(err);
@@ -134,8 +152,7 @@ const CretePost = ()=>{
             postDetails();
         }
     }, [base64Image]);
-   
-    
+       
     const ImageChange = async (e) => {
         setImage(e.target.files[0]);
         handleImageChange(e)
@@ -260,6 +277,9 @@ const CretePost = ()=>{
                 <button style={{ marginRight: '10px', backgroundColor: '#66c8e5', color: 'white', border: 'none', borderRadius: '5px', padding: '5px 10px', cursor: 'pointer' }} onClick={handleSelectAll}>Select All</button>
                 <button style={{ backgroundColor: '#66c8e5', color: 'white', border: 'none', borderRadius: '5px', padding: '5px 10px', cursor: 'pointer' }} onClick={handleClearAll}>Clear All</button>
             </div>
+            <div className="modal-footer">
+            <button className="modal-close waves-effect waves-green btn-flat" onClick={()=>setSearch('')}>close</button>
+          </div>
         </div>
            </div>
                 </div>

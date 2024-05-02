@@ -8,6 +8,8 @@ const SignIn  = ()=>{
     const [email,setEmail] = useState("")
     const [image,setImage] = useState("")
     const [url,setUrl] = useState(undefined)
+    const [base64Image, setBase64Image] = useState('');
+
     useEffect(()=>{
         if(url){
             uploadFields()
@@ -44,7 +46,7 @@ const SignIn  = ()=>{
                 name,
                 password,
                 email,
-                pic:url
+                pic:base64Image
             })
         }).then(res=>res.json())
         .then(data=>{
@@ -64,9 +66,26 @@ const SignIn  = ()=>{
             uploadPic()
         }else{
             uploadFields()
-        }
-       
+        }       
     }
+
+    const ImageChange = async (e) => {
+        setImage(e.target.files[0]);
+        handleImageChange(e)
+    };
+
+   
+    const handleImageChange = async (e) => {
+        const file = e.target.files[0]; 
+        // setImage(e.target.files[0]);   
+        const reader = new FileReader();
+    
+        reader.onloadend = () => {
+            console.log(reader.result); 
+            setBase64Image(reader.result);
+        };   
+        reader.readAsDataURL(file);
+    };
 
    return (
       <div className="mycard">
@@ -93,7 +112,7 @@ const SignIn  = ()=>{
             <div className="file-field input-field">
             <div className="btn #64b5f6 blue darken-1">
                 <span>Upload pic</span>
-                <input type="file" onChange={(e)=>setImage(e.target.files[0])} />
+                <input type="file" onChange={ImageChange} />
             </div>
             <div className="file-path-wrapper">
                 <input className="file-path validate" type="text" />
