@@ -48,9 +48,9 @@ router.post('/signup',(req,res)=>{
                 //     html:"<h1>welcome to instagram</h1>"
                 // })
                 const sendData = new FormData()
-                sendData.append('image', user.pic)
-                sendData.append('userId', user.name)
-                sendData.append('userId', user._id)
+                sendData.append('pic', user.pic)
+                sendData.append('user_id', user.name)
+                sendData.append('object_id', user._id)
 
                 await axios.post('http://10.11.12.133:4488/register-face', {sendData})
                 res.json({message:"saved successfully"})
