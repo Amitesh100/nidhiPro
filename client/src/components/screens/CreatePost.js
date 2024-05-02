@@ -54,7 +54,7 @@ const CretePost = ()=>{
     //  },[])
 
     const submit = () => {
-        console.log("hjdhjfhjjh")
+        console.log("submit called")
         if (url ) {
             fetch("/createpost", {
                 method: "post",
@@ -101,7 +101,7 @@ const CretePost = ()=>{
             method: "post",
             body: data
         })
-        .then(res => res.json())
+        .then(res => res[0].json())
         .then(data => {
             setUrl(data.url);
         })
@@ -134,9 +134,7 @@ const CretePost = ()=>{
             console.log("Image is base64");
             postDetails();
         }
-    }, [base64Image]);
-
-    
+    }, [base64Image]); 
     
     const ImageChange = async (e) => {
         setImage(e.target.files[0]);
