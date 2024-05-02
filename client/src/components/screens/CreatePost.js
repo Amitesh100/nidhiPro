@@ -10,7 +10,7 @@ const CretePost = ()=>{
     const [base64Image, setBase64Image] = useState('');
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [userProfile,setProfile] = useState("")
-
+    const [search,setSearch] = useState('')
     // useEffect(()=>{
     //    if(url){
     //     fetch("/createpost",{
@@ -40,17 +40,21 @@ const CretePost = ()=>{
     // }
     // },[url])
 
-    // useEffect(()=>{
-    //     fetch(`/user/${userid}`,{
-    //         headers:{
-    //             "Authorization":"Bearer "+localStorage.getItem("jwt")
-    //         }
-    //     }).then(res=>res.json())
-    //     .then(result=>{
-    //         console.log(result)         
-    //          setProfile(result)
-    //     })
-    //  },[])
+    const fetchUsers = (query)=>{
+        setSearch(query)
+        fetch('/search-users',{
+          method:"post",
+          headers:{
+            "Content-Type":"application/json"
+          },
+          body:JSON.stringify({
+            query
+          })
+        }).then(res=>res.json())
+        .then(results=>{
+          setUserDetails(results.user)
+        })
+     }
 
     const submit = () => {
         console.log("hjdhjfhjjh")
@@ -279,6 +283,12 @@ const CretePost = ()=>{
             </div>
             <div className="modal-footer">
             <button className="modal-close waves-effect waves-green btn-flat" onClick={()=>setSearch('')}>close</button>
+            <input
+            type="text"
+            placeholder="search users"
+            value={search}
+            onChange={(e)=>fetchUsers(e.target.value)}
+            />
           </div>
         </div>
            </div>
