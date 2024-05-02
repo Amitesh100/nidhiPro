@@ -9,7 +9,7 @@ const CretePost = ()=>{
     const [url,setUrl] = useState("")
     const [base64Image, setBase64Image] = useState('');
     const [selectedOptions, setSelectedOptions] = useState([]);
-    const [userProfile,setProfile] = useState("")
+    const [suggestedOptions, setSuggestedOptions] = useState([]);
     // const {userid} = useParams()
 
     // useEffect(()=>{
@@ -72,7 +72,7 @@ const CretePost = ()=>{
             .then(res => res.json())
             .then(data => {
                 if (data.error) {
-                    M.toast({ html: data.error, classes: "#c62828 red darken-3" });
+                    M.toast({ html: data.error +  ": Title and Body", classes: "#c62828 red darken-3" });
                 } else {
                     M.toast({ html: "Created post Successfully", classes: "#43a047 green darken-1" });
                     history.push('/');
@@ -87,28 +87,7 @@ const CretePost = ()=>{
 
     const isBase64 = (str) => {
         return /^data:image\/[a-z]+;base64,/.test(str);
-    };
-
-    const postDetails = () => {
-        const user = JSON.parse(localStorage.getItem("user"));
-        console.log("name:", user.name);
-        
-        const data = new FormData();
-        data.append("user_id", user.name); // Append user's name to FormData
-        data.append("pic", base64Image); // Append base64Image to FormData
-        
-        fetch("http://10.11.12.133:4488/get-suggestions", {
-            method: "post",
-            body: data
-        })
-        .then(res => res[0].json())
-        .then(data => {
-            setUrl(data.url);
-        })
-        .catch(err => {
-            console.log(err);
-        });
-    };
+    };   
 
     const upload = () => {
         const data = new FormData()
@@ -172,8 +151,36 @@ const CretePost = ()=>{
         setSelectedOptions(selectedValues);
     };
 
-    const options = ["Option 1", "Option 2", "Option 3"]; 
 
+    const postDetails = () => {
+        const user = JSON.parse(localStorage.getItem("user"));
+        const newData = [];
+    
+        console.log("name:", user.name);
+    
+        const data = new FormData();
+        data.append("user_id", user.name); // Append user's name to FormData
+        data.append("pic", base64Image); // Append base64Image to FormData
+    
+        fetch("http://10.11.12.133:4488/get-suggestions", {
+            method: "post",
+            body: data
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log("data", typeof data, data[0]);
+            for (let i = 0; i < data.length; i++) { 
+                newData.push(data[i].name);
+            }           
+            console.log("new Data", newData);
+            setSuggestedOptions(newData);
+            // console.log("new Data", typeof newData, newData);
+        })
+        .catch(err => {
+            console.error(err);
+        });
+    };
+    
     const toggleOption = (option) => {
         if (selectedOptions.includes(option)) {
             setSelectedOptions(selectedOptions.filter(item => item !== option));
@@ -181,17 +188,17 @@ const CretePost = ()=>{
             setSelectedOptions([...selectedOptions, option]);
         }
     };
-
+    
     const handleSelectAll = () => {
-        setSelectedOptions(options);
+        setSelectedOptions(suggestedOptions);
     };
-
+    
     const handleClearAll = () => {
         setSelectedOptions([]);
     };
-  
-    const checkboxOptions = options.map((option, index) => (
-        <label key={index} style={{flex: '1', marginRight: '10px' , color: 'green' }}>
+    
+    const checkboxOptions = suggestedOptions.map((option, index) => (
+        <label key={index} style={{ flex: '1', marginRight: '10px', color: 'green' }}>
             <input
                 type="checkbox"
                 value={option}
@@ -200,7 +207,7 @@ const CretePost = ()=>{
             />
             {option}
         </label>
-    ));
+    ));    
 
    return(
        <div className="card input-filed"
@@ -239,13 +246,6 @@ const CretePost = ()=>{
                     <p>Uploaded Image:</p>
                     <img src={url} alt="Uploaded" style={{ maxWidth: "100%" }} />
                     <h6>Tag People: </h6>
-                {/* <div>
-                    <select style={{ display: 'block' }} multiple={true} value={selectedOptions} onChange={handleOptionChange} >
-                        <option value="option1">Option 1</option>
-                        <option value="option2">Option 2</option>
-                        <option value="option3">Option 3</option>
-                    </select>
-                </div> */}
                 <div>
             
                 <div>
