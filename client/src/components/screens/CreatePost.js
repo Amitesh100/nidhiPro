@@ -1,44 +1,24 @@
-import React,{useState,useEffect} from 'react'
+import React,{useContext,useState,useEffect,useRef} from 'react'
+import {Link ,useHistory} from 'react-router-dom'
 import M from 'materialize-css'
-import {useHistory} from 'react-router-dom'
+
 const CretePost = ()=>{
     const history = useHistory()
+    const  searchModal = useRef(null)
     const [title,setTitle] = useState("")
     const [body,setBody] = useState("")
     const [image,setImage] = useState("")
     const [url,setUrl] = useState("")
     const [base64Image, setBase64Image] = useState('');
     const [selectedOptions, setSelectedOptions] = useState([]);
-    const [userDetails,setUserDetails] = useState([])
+    const [suggestedOptions, setSuggestedOptions] = useState([]);
     const [search,setSearch] = useState('')
-    // useEffect(()=>{
-    //    if(url){
-    //     fetch("/createpost",{
-    //         method:"post",
-    //         headers:{
-    //             "Content-Type":"application/json",
-    //             "Authorization":"Bearer "+localStorage.getItem("jwt")
-    //         },
-    //         body:JSON.stringify({
-    //             title,
-    //             body,
-    //             pic:url
-    //         })
-    //     }).then(res=>res.json())
-    //     .then(data=>{
-    
-    //        if(data.error){
-    //           M.toast({html: data.error,classes:"#c62828 red darken-3"})
-    //        }
-    //        else{
-    //            M.toast({html:"Created post Successfully",classes:"#43a047 green darken-1"})
-    //            history.push('/')
-    //        }
-    //     }).catch(err=>{
-    //         console.log(err)
-    //     })
-    // }
-    // },[url])
+    const [userDetails,setUserDetails] = useState([])
+    const [modalOpen, setModalOpen] = useState(false);
+
+    useEffect(()=>{
+        M.Modal.init(searchModal.current)
+    },[])
 
     const fetchUsers = (query)=>{
         setSearch(query)
@@ -57,7 +37,7 @@ const CretePost = ()=>{
      }
 
     const submit = () => {
-        console.log("hjdhjfhjjh")
+        console.log("submit called")
         if (url ) {
             fetch("/createpost", {
                 method: "post",
@@ -75,7 +55,7 @@ const CretePost = ()=>{
             .then(res => res.json())
             .then(data => {
                 if (data.error) {
-                    M.toast({ html: data.error, classes: "#c62828 red darken-3" });
+                    M.toast({ html: data.error +  ": Title and Body", classes: "#c62828 red darken-3" });
                 } else {
                     M.toast({ html: "Created post Successfully", classes: "#43a047 green darken-1" });
                     history.push('/');
@@ -90,47 +70,7 @@ const CretePost = ()=>{
 
     const isBase64 = (str) => {
         return /^data:image\/[a-z]+;base64,/.test(str);
-    };
-
-    const postDetails = () => {
-        const user = JSON.parse(localStorage.getItem("user"));
-        // console.log("name:", user.name);
-        
-        const data = new FormData();
-        data.append("user_id", user.name); // Append user's name to FormData
-        data.append("pic", base64Image); // Append base64Image to FormData
-        
-        fetch("http://10.11.12.133:4488/get-suggestions", {
-            method: "post",
-            body: data
-        })
-        .then(res => res.json())
-        .then(data => {
-            console.log("data",typeof data.result, data.result)
-            // console.log("new Datdzxza", JSON.parse(JSON.stringify(data.result.name)));
-            let newData = JSON.parse(JSON.stringify(data.result));
-            console.log("new Data", typeof newData, newData);
-            console.log("new Dataget", newData[2]);
-            
-            // Try parsing newData directly
-            try {
-                let newDatasanitize = JSON.stringify(newData);
-                console.log("newdatasanitize", newDatasanitize);
-            } catch (error) {
-                console.error("Error while parsing newData:", error);
-            }
-            // let arr = []
-            // newData.map(item => {
-            //     arr.push(item.name)
-            // })
-
-            // console.log('array got is', arr)
-            // setSelectedOptions(data.selectedOptions);
-        })
-        .catch(err => {
-            console.log(err);
-        });
-    };
+    };   
 
     const upload = () => {
         const data = new FormData()
@@ -155,8 +95,8 @@ const CretePost = ()=>{
             console.log("Image is base64");
             postDetails();
         }
-    }, [base64Image]);
-       
+    }, [base64Image]); 
+    
     const ImageChange = async (e) => {
         setImage(e.target.files[0]);
         handleImageChange(e)
@@ -193,8 +133,35 @@ const CretePost = ()=>{
         setSelectedOptions(selectedValues);
     };
 
-    const options = ["Option 1", "Option 2", "Option 3"]; 
-
+    const postDetails = () => {
+        const user = JSON.parse(localStorage.getItem("user"));
+        const newData = [];
+    
+        console.log("name:", user.name);
+    
+        const data = new FormData();
+        data.append("user_id", user.name); // Append user's name to FormData
+        data.append("pic", base64Image); // Append base64Image to FormData
+    
+        fetch("http://10.11.12.133:4488/get-suggestions", {
+            method: "post",
+            body: data
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log("data", typeof data, data[0]);
+            for (let i = 0; i < data.length; i++) { 
+                newData.push(data[i].name);
+            }           
+            console.log("new Data", newData);
+            setSuggestedOptions(newData);
+            // console.log("new Data", typeof newData, newData);
+        })
+        .catch(err => {
+            console.error(err);
+        });
+    };
+    
     const toggleOption = (option) => {
         if (selectedOptions.includes(option)) {
             setSelectedOptions(selectedOptions.filter(item => item !== option));
@@ -202,17 +169,34 @@ const CretePost = ()=>{
             setSelectedOptions([...selectedOptions, option]);
         }
     };
-
+    
     const handleSelectAll = () => {
-        setSelectedOptions(options);
+        setSelectedOptions(suggestedOptions);
     };
-
+    
     const handleClearAll = () => {
         setSelectedOptions([]);
     };
-  
-    const checkboxOptions = options.map((option, index) => (
-        <label key={index} style={{flex: '1', marginRight: '10px' , color: 'green' }}>
+
+    const fetchNameById = async (id) => {
+        console.log("called suggest")
+        try {
+            fetch(`/user/${id}`,{
+                headers:{
+                    "Authorization":"Bearer "+ localStorage.getItem("jwt")
+                }
+            }).then(res=>res.json())
+            .then(result=>{
+                console.log(result.user.name)             
+                //  setProfile(result)
+            })
+        } catch (error) {
+            console.error("Error fetching name:", error);
+        }
+    };
+    
+    const checkboxOptions = suggestedOptions.map((option, index) => (
+        <label key={index} style={{ flex: '1', marginRight: '10px', color: 'green' }}>
             <input
                 type="checkbox"
                 value={option}
@@ -221,7 +205,7 @@ const CretePost = ()=>{
             />
             {option}
         </label>
-    ));
+    ));    
 
    return(
        <div className="card input-filed"
@@ -256,65 +240,57 @@ const CretePost = ()=>{
             </div>
 
             {url && (
-                <div>
+            <div>
                     <p>Uploaded Image:</p>
                     <img src={url} alt="Uploaded" style={{ maxWidth: "100%" }} />
                     <h6>Tag People: </h6>
-                {/* <div>
-                    <select style={{ display: 'block' }} multiple={true} value={selectedOptions} onChange={handleOptionChange} >
-                        <option value="option1">Option 1</option>
-                        <option value="option2">Option 2</option>
-                        <option value="option3">Option 3</option>
-                    </select>
-                </div> */}
-                <div>
-            
-                <div>
-            
-            <div >
-                {checkboxOptions}
-            </div>
-            <div style={{padding: '5px 10px'}}>
-                Selected Options: {selectedOptions.join(", ")}
-            </div>
-            <div>
-                <button style={{ marginRight: '10px', backgroundColor: '#66c8e5', color: 'white', border: 'none', borderRadius: '5px', padding: '5px 10px', cursor: 'pointer' }} onClick={handleSelectAll}>Select All</button>
-                <button style={{ backgroundColor: '#66c8e5', color: 'white', border: 'none', borderRadius: '5px', padding: '5px 10px', cursor: 'pointer' }} onClick={handleClearAll}>Clear All</button>
-            </div>
-            {/* <div className="modal-footer">
-            <button className="modal-close waves-effect waves-green btn-flat" onClick={()=>setSearch('')}>close</button>
-            <input
-            type="text"
-            placeholder="search users"
-            value={search}
-            onChange={(e)=>fetchUsers(e.target.value)}
-            />
-          </div> */}
-          <div id="modal1" className="modal" ref={searchModal} style={{color:"black"}}>
-          <div className="modal-content">
-          <input
-            type="text"
-            placeholder="search users"
-            value={search}
-            onChange={(e)=>fetchUsers(e.target.value)}
-            />
-             <ul className="collection">
-               {userDetails.map(item=>{
-                 return <Link to={item._id !== state._id ? "/profile/"+item._id:'/profile'} onClick={()=>{
-                   M.Modal.getInstance(searchModal.current).close()
-                   setSearch('')
-                 }}><li className="collection-item">{item.email}</li></Link> 
-               })}
-               
-              </ul>
-          </div>
-          <div className="modal-footer">
-            <button className="modal-close waves-effect waves-green btn-flat" onClick={()=>setSearch('')}>close</button>
-          </div>
-        </div>
-        </div>
-           </div>
+                <div>            
+                    <div>           
+                        <div >
+                            {checkboxOptions}
+                        </div>
+
+                        <div style={{padding: '5px 10px'}}>
+                            Selected Options: {selectedOptions.join(", ")}
+                        </div>
+
+                        <div>
+                            <button style={{ marginRight: '10px', backgroundColor: '#66c8e5', color: 'white', border: 'none', borderRadius: '5px', padding: '5px 10px', cursor: 'pointer' }} onClick={handleSelectAll}>Select All</button>
+                            <button style={{ backgroundColor: '#66c8e5', color: 'white', border: 'none', borderRadius: '5px', padding: '5px 10px', cursor: 'pointer' }} onClick={handleClearAll}>Clear All</button>
+                        </div>
+
+                        {/* search body */}
+                        <div className="modal-content" ref={searchModal}>
+                        <input
+                            type="text"
+                            placeholder="Manual Search"
+                            value={search}
+                            onChange={(e)=>fetchUsers(e.target.value)}
+                            />
+                            <ul className="collection">
+                            {userDetails.map(item=>{
+                                {/* return <Link to={item._id ? "/profile/"+item._id:'/profile'} onClick={()=>{
+                                // M.Modal.getInstance(searchModal.current).close()
+                                //    setSearch('')
+                                }}>
+                                <li className="collection-item">{item.email}</li>
+                                </Link>  */}
+                                return  <li className="collection-item" onClick={()=>{
+                                    fetchNameById(item._id);
+                                }}>{item.email}</li>
+                               
+                            })}
+                            
+                            </ul>
+                        </div>
+
+                        <div className="modal-footer">
+                            <button className="modal-close waves-effect waves-green btn-flat" onClick={()=>setSearch('')}>close</button>
+                        </div>
+
+                        </div>
                 </div>
+            </div>
             )}
 
            <br></br>
