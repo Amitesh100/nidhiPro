@@ -10,7 +10,6 @@ const CretePost = ()=>{
     const [base64Image, setBase64Image] = useState('');
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [userProfile,setProfile] = useState("")
-    // const {userid} = useParams()
 
     // useEffect(()=>{
     //    if(url){
@@ -103,7 +102,8 @@ const CretePost = ()=>{
         })
         .then(res => res.json())
         .then(data => {
-            setUrl(data.url);
+            // setUrl(data.url);
+            setSelectedOptions(data.selectedOptions);
         })
         .catch(err => {
             console.log(err);
@@ -126,8 +126,7 @@ const CretePost = ()=>{
        .catch(err=>{
            console.log(err)
        })
-    };
-    
+    };    
     
     useEffect(() => {
         if (base64Image) {
@@ -135,8 +134,7 @@ const CretePost = ()=>{
             postDetails();
         }
     }, [base64Image]);
-
-    
+   
     
     const ImageChange = async (e) => {
         setImage(e.target.files[0]);
