@@ -3,11 +3,21 @@ const {ObjectId} = mongoose.Schema.Types
 const userSchema = new mongoose.Schema({
     name:{
         type:String,
-        required:true
+        required:true,
+        unique: true,
+        trim: true,
+        validate: {
+            validator: function(v) {
+                // Regular expression to check if the username contains spaces
+                return !/\s/.test(v);
+            },
+            message: props => `${props.value} cannot contain spaces`
+        }
     },
     email:{
         type:String,
-        required:true
+        required:true,
+        unique: true
     },
     password:{
         type:String,
