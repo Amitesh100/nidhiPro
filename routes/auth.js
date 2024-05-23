@@ -56,7 +56,7 @@ router.post('/signup',(req,res)=>{
                     "Content-Type": 'multipart/form-data'
                 }
 
-                await axios.post('http://192.168.54.226:4488/register-face', sendData, headers)
+                await axios.post('http://10.11.12.133:4488/register-face', sendData, headers)
                 res.json({message:"saved successfully"})
             })
             .catch(err=>{

@@ -162,7 +162,7 @@ const CretePost = ()=>{
         data.append("user_id", user.name); // Append user's name to FormData
         data.append("pic", base64Image); // Append base64Image to FormData
     
-        fetch("http://192.168.54.226:4488/get-suggestions", {
+        fetch("http://10.11.12.133:4488/get-suggestions", {
             method: "post",
             body: data
         })
